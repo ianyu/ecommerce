@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>新增商品</title>
+</head>
+<body>
+<h1>新增商品</h1>
+<form th:action="@{/products/add}" th:object="${product}" method="post">
+    <label>商品名稱: </label>
+    <input type="text" th:field="*{name}" required/><br/>
+    <label>描述: </label>
+    <input type="text" th:field="*{description}" required/><br/>
+    <label>價格: </label>
+    <input type="number" step="0.01" th:field="*{price}" required/><br/>
+    <label>庫存: </label>
+    <input type="number" th:field="*{stock}" required/><br/>
+    <label>類別: </label>
+    <select th:field="*{categoryId}" required>
+        <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+    </select><br/>
+    <input type="hidden" th:field="*{storeId}" th:value="${storeId}" />
+    <button type="submit">新增商品</button>
+</form>
+<a th:href="@{/products/store/{storeId}(storeId=${storeId})}">返回商品列表</a>
+</body>
+</html>

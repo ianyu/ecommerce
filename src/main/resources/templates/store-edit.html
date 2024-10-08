@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>編輯商店</title>
+</head>
+<body>
+<h1>編輯商店</h1>
+<form th:action="@{/stores/{id}/edit(id=${store.id})}" th:object="${store}" method="post">
+    <label>商店名稱: </label>
+    <input type="text" th:field="*{name}" required/><br/>
+    <label>地址: </label>
+    <input type="text" th:field="*{address}" required/><br/>
+    <label>聯絡方式: </label>
+    <input type="text" th:field="*{contact}" required/><br/>
+    <button type="submit">更新商店</button>
+</form>
+</body>
+</html>

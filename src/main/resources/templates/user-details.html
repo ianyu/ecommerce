@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用戶詳細資料</title>
+    <!-- 你可以在這裡引用外部的 CSS 樣式表或加入自定義樣式 -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<h1>用戶詳細資料</h1>
+
+<!-- 用戶基本資料顯示 -->
+<div>
+    <label>用戶名稱:</label>
+    <span th:text="${user.name}"></span>
+</div>
+<br>
+<div>
+    <label>電子郵件:</label>
+    <span th:text="${user.email}"></span>
+</div>
+<br>
+<div>
+    <label>地址:</label>
+    <span th:text="${user.address}"></span>
+</div>
+<br>
+
+<!-- 返回首頁或其他操作連結 -->
+<div>
+    <a th:href="@{/users/update/{id}(id=${user.id})}">編輯用戶資料</a> |
+    <a th:href="@{/}">返回首頁</a>
+</div>
+</body>
+</html>
