@@ -1,7 +1,13 @@
 package com.tpisoftware.org.stlucia.ecommerce.controller;
 
 import com.tpisoftware.org.stlucia.ecommerce.dto.CategoryDTO;
+import com.tpisoftware.org.stlucia.ecommerce.dto.StoreDTO;
+import com.tpisoftware.org.stlucia.ecommerce.dto.UserDTO;
+import com.tpisoftware.org.stlucia.ecommerce.mapper.CategoryMapper;
+import com.tpisoftware.org.stlucia.ecommerce.mapper.StoreMapper;
 import com.tpisoftware.org.stlucia.ecommerce.model.Category;
+import com.tpisoftware.org.stlucia.ecommerce.model.Store;
+import com.tpisoftware.org.stlucia.ecommerce.model.User;
 import com.tpisoftware.org.stlucia.ecommerce.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,59 +15,75 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/categories")
+@RequestMapping("/category")
 public class CategoryController {
+
     @Autowired
     private CategoryService categoryService;
 
-    // 查詢所有商品類別
-    @GetMapping
-    public String getAllCategories(Model model) {
-        List<Category> categories = categoryService.getAllCategories();
-        model.addAttribute("categories", categories);
-        return "category-list";
+    // 瀏覽所有商品類別
+    @GetMapping(value = "list")
+    public String viewListPage(@RequestParam(name = "editable", defaultValue = "false") Boolean editable,
+                             Model model) {
+        List<Category> list = categoryService.getAllCategories();
+
+        List<CategoryDTO> result = list.stream()
+                .map(CategoryMapper::toDto)
+                .collect(Collectors.toList());
+
+        model.addAttribute("categories", result);
+        model.addAttribute("editable", editable);
+        return "category/list";
     }
 
-    // 顯示新增商品類別的表單
-    @GetMapping("/add")
-    public String showAddCategoryForm(Model model) {
+    // 去新增商品類別的頁面
+    @GetMapping("/create")
+    public String viewCreatePage(Model model) {
         model.addAttribute("category", new CategoryDTO());
-        return "category-add";
+        model.addAttribute("editable", true);
+        return "category/single";
     }
 
-    // 新增商品類別
-    @PostMapping("/add")
-    public String addCategory(@ModelAttribute CategoryDTO categoryDTO) {
+    // 去瀏覽商品類別的頁面
+    @GetMapping(value = "/{id}")
+    public String toViewEditPage(@PathVariable("id") Long id,
+                                  @RequestParam(name = "editable", defaultValue = "false") Boolean editable,
+                                  Model model) {
+        Category category = categoryService.findById(id);
+
+        CategoryDTO categoryDTO = CategoryMapper.toDto(category);
+        model.addAttribute("category", categoryDTO);
+        model.addAttribute("editable", editable);
+        return "category/single";
+    }
+
+    @PostMapping
+    public String create(@ModelAttribute CategoryDTO dto) {
         Category category = new Category();
-        category.setName(categoryDTO.getName());
-        categoryService.addCategory(category);
-        return "redirect:/categories";
+        category.setName(dto.getName());
+
+        categoryService.create(category);
+        return "redirect:/category/" + category.getId();
     }
 
-    // 顯示編輯商品類別的表單
-    @GetMapping("/{id}/edit")
-    public String showEditCategoryForm(@PathVariable Long id, Model model) {
-        Category category = categoryService.getCategoryById(id);
-        model.addAttribute("category", category);
-        return "category-edit";
-    }
-
-    // 更新商品類別
-    @PostMapping("/{id}/edit")
-    public String updateCategory(@PathVariable Long id, @ModelAttribute CategoryDTO categoryDTO) {
+    // 更新商店資訊
+    @PutMapping
+    public String update(@ModelAttribute CategoryDTO dto) {
         Category category = new Category();
-        category.setName(categoryDTO.getName());
-        categoryService.updateCategory(id, category);
-        return "redirect:/categories";
+        category.setName(dto.getName());
+
+        categoryService.update(dto.getId(), category);
+        return "redirect:/category/" + dto.getId();
     }
 
     // 刪除商品類別
-    @PostMapping("/{id}/delete")
-    public String deleteCategory(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
-        return "redirect:/categories";
+    @DeleteMapping
+    public String delete(@ModelAttribute CategoryDTO dto) {
+        categoryService.deleteCategory(dto.getId());
+        return "redirect:/category/list";
     }
-}
 
+}

@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>商品類別列表</title>
+</head>
+<body>
+<h1>商品類別列表</h1>
+<table>
+  <thead>
+  <tr>
+    <th>類別名稱</th>
+    <th>操作</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="category : ${categories}">
+    <td th:text="${category.name}"></td>
+    <td>
+      <a th:href="@{|/category/${category.id}|}">瀏覽</a> |
+      <a th:href="@{|/category/${category.id}?editable=true|}">編輯</a> |
+      <form th:action="@{/category}" method="post" style="display:inline;">
+        <input type="hidden" name="_method" value="delete">
+        <input type="hidden" name="id" th:value="${category.id}" th:if="${category.id != null}">
+        <button type="submit">刪除</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<a th:href="@{/category/create}">新增商品類別</a>
+<a th:href="@{/}">返回首頁</a>
+</body>
+</html>

@@ -23,7 +23,7 @@ public class StoreService {
     }
 
     // 根據商店 ID 查詢商店（新增方法）
-    public Store getStoreById(Long id) {
+    public Store findById(Long id) {
         return storeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("找不到商店 ID：" + id));
     }
 
@@ -35,4 +35,5 @@ public class StoreService {
         store.setContact(updatedStore.getContact());
         return storeRepository.save(store);
     }
+
 }

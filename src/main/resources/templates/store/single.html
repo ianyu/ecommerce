@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title th:text="${(editable ? (store.id == null  ? '新增' : '編輯') : '瀏覽')+'商店'}"></title>
+</head>
+<body>
+<div class="container-fluid">
+  <h1 th:text="${(editable ? (store.id == null  ? '新增' : '編輯') : '瀏覽')+'商店'}"></h1>
+
+  <div th:if="${!editable}">
+    <div>
+      <label>商店名稱: </label>
+      <span th:text="${store.name}"></span>
+    </div>
+    <div>
+      <label>地址: </label>
+      <span th:text="${store.address}"></span>
+    </div>
+    <div>
+      <label>聯絡方式: </label>
+      <span th:text="${store.contact}"></span>
+    </div>
+    <br>
+
+    <div>
+      <a th:href="@{|/store/${store.id}?editable=true|}">編輯</a>
+      <a th:href="@{/}">返回首頁</a>
+    </div>
+  </div>
+
+  <form th:action="@{/store}" method="post" th:if="${editable}">
+    <input type="hidden" name="_method" value="put" th:if="${store.id != null}">
+    <input type="hidden" name="id" th:value="${store.id}" th:if="${store.id != null}">
+    <input type="hidden" name="ownerId" th:value="${store.ownerId}"/>
+
+    <div>
+      <label>商店名稱: </label>
+      <input type="text" th:field="${store.name}" required/><br/>
+    </div>
+    <div>
+      <label>地址: </label>
+      <input type="text" th:field="${store.address}" required/><br/>
+    </div>
+    <div>
+      <label>聯絡方式: </label>
+      <input type="text" th:field="${store.contact}" required/><br/>
+    </div>
+    <br>
+
+    <div>
+      <button type="submit" th:text="${store.id} != null ? '儲存' : '建立商店'">儲存</button> |
+      <!-- 返回首頁或其他操作連結 -->
+      <a th:href="@{/}">返回首頁</a>
+    </div>
+  </form>
+</div>
+</body>
+</html>

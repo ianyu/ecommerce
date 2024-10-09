@@ -133,7 +133,7 @@ mvn spring-boot:run
 ### 3. 測試與使用說明
 
 1. **會員註冊與登入**：
-   - 訪問 `http://localhost:8080/users/register` 進行會員註冊。
+   - 訪問 `http://localhost:8080/user/register` 進行會員註冊。
    - 註冊完成後，可使用註冊的電子郵件與密碼登入系統。
 
 2. **購物車與訂單管理**：
@@ -158,7 +158,7 @@ mvn spring-boot:run
 
 1. **會員註冊 API**
 
-   - 路徑：`POST /api/users/register`
+   - 路徑：`POST /api/user/register`
    - 請求範例：
 
      ```json

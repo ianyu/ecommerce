@@ -2,14 +2,16 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
+    hiddenmethod:
+      filter:
+        enabled: true
   application:
     name: ecommerce
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/ecommerce_db
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://localhost:5432/ecommerce
+    username: admin
+    password: admin
     driver-class-name: org.postgresql.Driver
 
   jpa:

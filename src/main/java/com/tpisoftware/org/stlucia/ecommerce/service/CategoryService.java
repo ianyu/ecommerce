@@ -13,6 +13,10 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
 
     // 新增商品類別
+    public void create(Category category) {
+        categoryRepository.save(category);
+    }
+
     public Category addCategory(Category category) {
         return categoryRepository.save(category);
     }
@@ -22,21 +26,22 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    // 根據類別 ID 查詢商品類別
-    public Category getCategoryById(Long id) {
+    // 根據 ID 查詢商品類別
+    public Category findById(Long id) {
         return categoryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("找不到類別 ID：" + id));
     }
 
     // 更新商品類別
-    public Category updateCategory(Long id, Category updatedCategory) {
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("找不到類別 ID：" + id));
-        category.setName(updatedCategory.getName());
-        return categoryRepository.save(category);
+    public void update(Long id, Category readyToUpdate) {
+        Category category = findById(id);
+        category.setName(readyToUpdate.getName());
+        categoryRepository.save(category);
     }
 
     // 刪除商品類別
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
     }
+
 }
 

@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>擁有的商店列表</title>
+</head>
+<body>
+<h1>商店列表</h1>
+<table>
+  <thead>
+  <tr>
+    <th>商店名稱</th>
+    <th>地址</th>
+    <th>聯絡方式</th>
+    <th>操作</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="store : ${stores}">
+    <td th:text="${store.name}"></td>
+    <td th:text="${store.address}"></td>
+    <td th:text="${store.contact}"></td>
+    <td>
+      <a th:href="@{/store/${store.id}}">編輯</a> |
+    </td>
+  </tr>
+  </tbody>
+</table>
+<a th:href="@{|/store/create?owner=${owner.id}|}">新增商店</a>
+<a th:href="@{/}">返回首頁</a>
+</body>
+</html>
