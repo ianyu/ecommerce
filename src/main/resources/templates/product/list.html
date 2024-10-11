@@ -4,30 +4,44 @@
   <title>擁有的商品列表</title>
 </head>
 <body>
-<h1>商品列表</h1>
-<table>
-  <thead>
-  <tr>
-    <th>商品名稱</th>
-    <th>操作</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="category : ${categories}">
-    <td th:text="${category.name}"></td>
-    <td>
-      <a th:href="@{|/category/${category.id}|}">瀏覽</a> |
-      <a th:href="@{|/category/${category.id}?editable=true|}">編輯</a> |
-      <form th:action="@{/category}" method="post" style="display:inline;">
-        <input type="hidden" name="_method" value="delete">
-        <input type="hidden" name="id" th:value="${category.id}" th:if="${category.id != null}">
-        <button type="submit">刪除</button>
-      </form>
-    </td>
-  </tr>
-  </tbody>
-</table>
-<a th:href="@{/category/create}">新增商品類別</a>
-<a th:href="@{/}">返回首頁</a>
+<div class="container-fluid">
+  <h1>商品列表</h1>
+  <div th:if="${categoryMap == null || categoryMap.size() == 0}">
+    <a th:href="@{/category/list}">請先新增商品類別</a>
+  </div>
+  <div th:unless="${categoryMap == null || categoryMap.size() == 0}">
+    <table>
+      <thead>
+      <tr>
+        <th>商品類別</th>
+        <th>商品名稱</th>
+        <th>商品庫存</th>
+        <th>商品價格</th>
+        <th>操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="product : ${products}">
+        <td th:text="${categoryMap.get(product.categoryId)}"></td>
+        <td th:text="${product.name}"></td>
+        <td th:text="${product.stock}"></td>
+        <td th:text="${product.price}"></td>
+        <td>
+          <a th:href="@{|/product/${product.id}|}">瀏覽</a> |
+          <a th:href="@{|/product/${product.id}?editable=true|}">編輯</a> |
+          <form th:action="@{/product}" method="post" style="display:inline;">
+            <input type="hidden" name="_method" value="delete">
+            <input type="hidden" name="id" th:value="${product.id}">
+            <input type="hidden" name="storeId" th:value="${product.storeId}">
+            <button type="submit">刪除</button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <a th:href="@{|/product/blank?store=${storeId}|}">新增商品</a>
+    <a th:href="@{/}">返回首頁</a>
+  </div>
+</div>
 </body>
 </html>

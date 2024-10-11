@@ -1,6 +1,7 @@
 package com.tpisoftware.org.stlucia.ecommerce.controller;
 
 import com.tpisoftware.org.stlucia.ecommerce.dto.ProductDTO;
+import com.tpisoftware.org.stlucia.ecommerce.mapper.ProductMapper;
 import com.tpisoftware.org.stlucia.ecommerce.model.Category;
 import com.tpisoftware.org.stlucia.ecommerce.model.Product;
 import com.tpisoftware.org.stlucia.ecommerce.model.Store;
@@ -13,9 +14,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/products")
+@RequestMapping("/product")
 public class ProductController {
     @Autowired
     private ProductService productService;
@@ -26,70 +29,90 @@ public class ProductController {
     @Autowired
     private CategoryService categoryService;
 
-//    // 顯示新增商品的表單
-//    @GetMapping("/add/{storeId}")
-//    public String showAddProductForm(@PathVariable Long storeId, Model model) {
-//        model.addAttribute("product", new ProductDTO());
-//        model.addAttribute("storeId", storeId);
-//        model.addAttribute("categories", categoryService.getAllCategories());
-//        return "product-add";
-//    }
-//
-//    // 新增商品
-//    @PostMapping("/add")
-//    public String addProduct(@ModelAttribute ProductDTO productDTO) {
-//        Store store = storeService.getStoreById(productDTO.getStoreId()); // 找到對應商店
-//        Category category = categoryService.getCategoryById(productDTO.getCategoryId()); // 找到對應類別
-//
-//        Product product = new Product();
-//        product.setName(productDTO.getName());
-//        product.setDescription(productDTO.getDescription());
-//        product.setPrice(productDTO.getPrice());
-//        product.setStock(productDTO.getStock());
-//        product.setStore(store);
-//        product.setCategory(category);
-//
-//        productService.addProduct(product);
-//        return "redirect:/products/store/" + productDTO.getStoreId();
-//    }
-//
-//    // 根據商店 ID 查詢所有商品
-//    @GetMapping("/store/{storeId}")
-//    public String getProductsByStore(@PathVariable Long storeId, Model model) {
-//        List<Product> products = productService.getProductsByStoreId(storeId);
-//        model.addAttribute("products", products);
-//        return "product-list";
-//    }
-//
-//    // 顯示編輯商品資訊的表單
-//    @GetMapping("/{id}/edit")
-//    public String showEditProductForm(@PathVariable Long id, Model model) {
-//        Product product = productService.getProductById(id);
-//        model.addAttribute("product", product);
-//        model.addAttribute("categories", categoryService.getAllCategories());
-//        return "product-edit";
-//    }
-//
-//    // 更新商品資訊
-//    @PostMapping("/{id}/edit")
-//    public String updateProduct(@PathVariable Long id, @ModelAttribute ProductDTO productDTO) {
-//        Category category = categoryService.getCategoryById(productDTO.getCategoryId());
-//
-//        Product product = new Product();
-//        product.setName(productDTO.getName());
-//        product.setDescription(productDTO.getDescription());
-//        product.setPrice(productDTO.getPrice());
-//        product.setStock(productDTO.getStock());
-//        product.setCategory(category);
-//
-//        productService.updateProduct(id, product);
-//        return "redirect:/products/store/" + productDTO.getStoreId();
-//    }
-//
-//    // 刪除商品
-//    @PostMapping("/{id}/delete")
-//    public String deleteProduct(@PathVariable Long id) {
-//        productService.deleteProduct(id);
-//        return "redirect:/products/store/" + productService.getProductById(id).getStore().getId();
-//    }
+    @GetMapping(value = "list")
+    public String findAllByStore(@RequestParam("store") Long storeId,
+                                 Model model) {
+        List<Product> list = productService.getProductsByStoreId(storeId);
+        List<ProductDTO> result = list.stream()
+                .map(ProductMapper::toDto)
+                .collect(Collectors.toList());
+
+        List<Category> categories = categoryService.getAllCategories();
+        Map<Long, String> categoryMap = categories.stream()
+                .collect(Collectors.toMap(Category::getId, Category::getName));
+
+        model.addAttribute("storeId", storeId);
+        model.addAttribute("products", result);
+        model.addAttribute("categoryMap", categoryMap);
+        return "product/list";
+    }
+
+    @GetMapping("/blank")
+    public String getBlankInfo(@RequestParam("store") Long storeId, Model model) {
+        ProductDTO dto = new ProductDTO();
+        dto.setStoreId(storeId);
+
+        List<Category> categories = categoryService.getAllCategories();
+
+        model.addAttribute("storeId", storeId);
+        model.addAttribute("product", dto);
+        model.addAttribute("categories", categories);
+        model.addAttribute("editable", true);
+        return "product/single";
+    }
+
+    @PostMapping
+    public String create(@ModelAttribute ProductDTO dto) {
+        Store store = storeService.findById(dto.getStoreId());
+        Category category = getCategory(dto);
+
+        Product product = ProductMapper.toModel(dto, store, category);
+
+        productService.addProduct(product);
+
+        return "redirect:/product/" + product.getId();
+    }
+
+    @GetMapping(value = "/{id}")
+    public String browse(@PathVariable("id") Long id,
+                         @RequestParam(name = "editable", defaultValue = "false") Boolean editable,
+                         Model model) {
+        Product product = productService.getProductById(id);
+        ProductDTO dto = ProductMapper.toDto(product);
+
+        List<Category> categories = categoryService.getAllCategories();
+
+        model.addAttribute("product", dto);
+        model.addAttribute("categories", categories);
+        model.addAttribute("editable", editable);
+
+        return "product/single";
+    }
+
+    @PutMapping
+    public String update(@ModelAttribute ProductDTO dto) {
+        Category category = getCategory(dto);
+
+        Product product = ProductMapper.toModel(dto, null, category);
+
+        productService.updateProduct(dto.getId(), product);
+
+        return "redirect:/product/" + dto.getId();
+    }
+
+    @DeleteMapping
+    public String delete(@ModelAttribute ProductDTO dto) {
+        productService.deleteProduct(dto.getId());
+
+        return "redirect:/product/list?store=" + dto.getStoreId();
+    }
+
+    private Category getCategory(ProductDTO dto) {
+        Category category = null;
+        if (dto.getCategoryId() != null) {
+            category = categoryService.findById(dto.getCategoryId());
+        }
+        return category;
+    }
+
 }

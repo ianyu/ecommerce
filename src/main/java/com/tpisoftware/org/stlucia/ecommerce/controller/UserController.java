@@ -16,17 +16,15 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // 去新增使用者的頁面
     @GetMapping("/register")
-    public String viewCreatePage(Model model) {
+    public String getBlankInfo(Model model) {
         model.addAttribute("user", new UserDTO());
         model.addAttribute("editable", true);
         return "user";
     }
 
-    // 去瀏覽使用者的頁面
     @GetMapping(value = "{id}")
-    public String viewEditPage(@PathVariable("id") Long id,
+    public String browse(@PathVariable("id") Long id,
                              @RequestParam(name = "editable", defaultValue = "false") Boolean editable,
                              Model model) {
         User user = userService.findById(id);
@@ -37,7 +35,6 @@ public class UserController {
         return "user";
     }
 
-    // 註冊(新增使用者)
     @PostMapping
     public String create(@ModelAttribute UserDTO userDTO) {
         // 確保 UserDTO 中有 password 欄位
