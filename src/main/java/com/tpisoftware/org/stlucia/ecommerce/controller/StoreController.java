@@ -1,8 +1,9 @@
 package com.tpisoftware.org.stlucia.ecommerce.controller;
 
 import com.tpisoftware.org.stlucia.ecommerce.dto.StoreDTO;
-import com.tpisoftware.org.stlucia.ecommerce.dto.UserDTO;
+import com.tpisoftware.org.stlucia.ecommerce.dto.user.UserDTO;
 import com.tpisoftware.org.stlucia.ecommerce.mapper.StoreMapper;
+import com.tpisoftware.org.stlucia.ecommerce.mapper.UserMapper;
 import com.tpisoftware.org.stlucia.ecommerce.model.Store;
 import com.tpisoftware.org.stlucia.ecommerce.model.User;
 import com.tpisoftware.org.stlucia.ecommerce.service.StoreService;
@@ -29,8 +30,7 @@ public class StoreController {
                                 @RequestParam(name = "editable", defaultValue = "false") Boolean editable,
                                 Model model) {
         User user = userService.findById(ownerId);
-        UserDTO ownerDTO = new UserDTO(user.getId(), user.getEmail(), user.getPassword(),
-                user.getName(), user.getAddress());
+        UserDTO ownerDTO = UserMapper.toDto(user);
 
         List<Store> list = storeService.getStoresByOwnerId(ownerId);
         List<StoreDTO> result = list.stream()

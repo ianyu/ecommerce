@@ -13,6 +13,5 @@ import lombok.NoArgsConstructor;
 public class CartItemDTO {
     private Long id;
     private Long productId; // 商品 ID
-    private Long userId; // 用戶 ID
     private int quantity; // 商品數量
 }

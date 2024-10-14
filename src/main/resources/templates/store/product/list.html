@@ -15,6 +15,7 @@
       <tr>
         <th>商品類別</th>
         <th>商品名稱</th>
+        <th>商品庫存</th>
         <th>商品價格</th>
         <th>操作</th>
       </tr>
@@ -23,15 +24,23 @@
       <tr th:each="product : ${products}">
         <td th:text="${categoryMap.get(product.categoryId)}"></td>
         <td th:text="${product.name}"></td>
+        <td th:text="${product.stock}"></td>
         <td th:text="${product.price}"></td>
         <td>
-          <a th:href="@{|/product/${product.id}|}">瀏覽</a> |
+          <a th:href="@{|/store/${storeId}/product/${product.id}|}">瀏覽</a> |
+          <a th:href="@{|/store/${storeId}/product/${product.id}?editable=true|}">編輯</a> |
+          <form th:action="@{/store/${storeId}/product}" method="post" style="display:inline;">
+            <input type="hidden" name="_method" value="delete">
+            <input type="hidden" name="id" th:value="${product.id}">
+            <input type="hidden" name="storeId" th:value="${storeId}">
+            <button type="submit">刪除</button>
+          </form>
         </td>
       </tr>
       </tbody>
     </table>
+    <a th:href="@{|/store/${storeId}/product/blank|}">新增商品</a>
     <a th:href="@{/}">返回首頁</a>
-    <a th:href="@{|/cart|}">去購物車頁</a>
   </div>
 </div>
 </body>

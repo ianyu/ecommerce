@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title th:text="${(editable ? (product.id == null  ? '新增' : '編輯') : '瀏覽')+'商品'}"></title>
+  <title th:text="${product.name}"></title>
 </head>
 <body>
 <div class="container-fluid">
-  <h1 th:text="${(editable ? (product.id == null  ? '新增' : '編輯') : '瀏覽')+'商品'}"></h1>
+  <h1 th:text="${product.name}"></h1>
 
-  <div th:if="${!editable}">
+  <div>
     <div>
       <label>商品名稱: </label>
       <span th:text="${product.name}"></span>
@@ -20,66 +20,31 @@
       <label>價格: </label>
       <span th:text="${product.price}"></span>
     </div>
-    <div>
-      <label>庫存: </label>
-      <span th:text="${product.stock}"></span>
-    </div>
-    <div>
-      <label>類別: </label>
-      <span th:each="category : ${categories}">
-        <span th:text="${category.name}" th:if="${product.categoryId==category.id}"></span>
-      </span>
-    </div>
     <br>
-
-    <div>
-      <a th:href="@{|/product/${product.id}?editable=true|}">編輯</a>
-      <a th:href="@{|/product/list?store=${product.storeId}|}">返回商品列表</a> |
-      <a th:href="@{/}">返回首頁</a>
-    </div>
   </div>
 
-  <form th:action="@{/product}" method="post" th:if="${editable}">
-    <input type="hidden" name="_method" value="put" th:if="${product.id != null}">
-    <input type="hidden" name="id" th:value="${product.id}" th:if="${product.id != null}">
-    <input type="hidden" name="storeId" th:value="${product.storeId}"/>
+  <form th:action="@{/cart}" method="post" th:if="${product.stock > 0}">
+    <input type="hidden" name="_method" value="put" th:if="${cart.id != null}">
+    <input type="hidden" name="id" th:value="${cart.id}" th:if="${cart.id != null}">
+    <input type="hidden" name="productId" th:value="${cart.productId}"/>
 
     <div>
-      <label>商品名稱: </label>
-      <input type="text" th:field="${product.name}" required/><br/>
-    </div>
-    <div>
-      <label>描述: </label>
-      <input type="text" th:field="${product.description}"/><br/>
-    </div>
-    <div>
-      <label>價格: </label>
-      <input type="text" th:field="${product.price}" required/><br/>
-    </div>
-    <div>
-      <label>庫存: </label>
-      <input type="text" th:field="${product.stock}" required/><br/>
-    </div>
-    <div>
-      <label>類別: </label>
-      <select name="categoryId">
-        <option th:each="category : ${categories}"
-                th:value="${category.id}"
-                th:text="${category.name}"
-                th:selected="${product.categoryId != null && category.id == product.categoryId}">1
-        </option>
-      </select>
+      <label>選購數量: </label>
+      <input type="text" th:field="${cart.quantity}" required/><br/>
     </div>
     <br>
 
     <div>
-      <button type="submit" th:text="${product.id} != null ? '儲存' : '建立商品'">儲存</button>
-      |
-      <a th:href="@{|/product/list?store=${product.storeId}|}">返回商品列表</a> |
-      <!-- 返回首頁或其他操作連結 -->
-      <a th:href="@{/}">返回首頁</a>
+      <button type="submit">確認</button> |
     </div>
   </form>
+  <div>
+    <!--      <a th:href="@{|/product/list?categoryId=${categoryId}|}">返回商品列表</a> |-->
+    <a th:href="@{/product/list}" th:if="${categoryId == null}">返回商品列表</a> |
+    <a th:href="@{/product/list(categoryId=${categoryId})}" th:if="${categoryId != null}">返回商品列表</a> |
+    <!-- 返回首頁或其他操作連結 -->
+    <a th:href="@{/}">返回首頁</a>
+  </div>
 </div>
 </body>
 </html>

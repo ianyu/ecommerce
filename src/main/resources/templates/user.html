@@ -26,9 +26,9 @@
     <br>
 
     <div>
-      <a th:href="@{|/user/${user.id}?editable=true|}">編輯</a> |
-      <a th:href="@{/}">返回首頁</a>
+      <a th:href="@{|/user/${user.id}?editable=true|}">編輯</a>
     </div>
+    <br>
   </div>
 
   <form th:action="@{/user}" method="post" th:if="${editable}">
@@ -56,11 +56,20 @@
     <br>
 
     <div>
-      <button type="submit" th:text="${user.id != null ? '儲存' : '會員註冊'}">儲存</button> |
-      <!-- 返回首頁或其他操作連結 -->
-      <a th:href="@{/}">返回首頁</a>
+      <button type="submit" th:text="${user.id != null ? '儲存' : '會員註冊'}">儲存</button>
     </div>
+    <br>
   </form>
+
+  <div th:if="${session.loginUser} == null">
+    <a th:href="@{/}">返回首頁</a>
+  </div>
+  <div th:if="${session.loginUser} != null">
+    <a th:href="@{|/store/list?owner=${session.loginUser.id}|}">我的商店</a> |
+    <a th:href="@{/product/list}">瀏覽所有商品</a>
+    <a th:href="@{/}">返回首頁</a>
+  </div>
+
 </div>
 </body>
 </html>

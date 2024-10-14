@@ -24,7 +24,7 @@
 
     <div>
       <a th:href="@{|/store/${store.id}?editable=true|}">編輯</a> |
-      <a th:href="@{|/product/list?store=${store.id}|}">瀏覽商品</a> |
+      <a th:href="@{|/store/${store.id}/product/list|}">瀏覽商品</a> |
       <a th:href="@{|/store/list?owner=${store.ownerId}|}">返回商店列表</a> |
       <a th:href="@{/}">返回首頁</a>
     </div>
@@ -51,7 +51,7 @@
 
     <div>
       <button type="submit" th:text="${store.id} != null ? '儲存' : '建立商店'">儲存</button> |
-      <a th:href="@{|/product/list?store=${store.id}|}">瀏覽商品</a> |
+      <a th:href="@{|/store/${store.id}/product/list|}">瀏覽商品</a> |
       <a th:href="@{|/store/list?owner=${store.ownerId}|}">返回商店列表</a> |
       <a th:href="@{/}">返回首頁</a>
     </div>
