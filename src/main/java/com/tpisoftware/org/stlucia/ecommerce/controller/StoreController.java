@@ -8,6 +8,8 @@ import com.tpisoftware.org.stlucia.ecommerce.model.Store;
 import com.tpisoftware.org.stlucia.ecommerce.model.User;
 import com.tpisoftware.org.stlucia.ecommerce.service.StoreService;
 import com.tpisoftware.org.stlucia.ecommerce.service.UserService;
+import com.tpisoftware.org.stlucia.ecommerce.util.JwtUtil;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +21,9 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/store")
 public class StoreController {
+
+    @Autowired
+    private JwtUtil jwtUtil;
     @Autowired
     private StoreService storeService;
 
@@ -26,13 +31,16 @@ public class StoreController {
     private UserService userService;
 
     @GetMapping(value = "list")
-    public String findAllByUser(@RequestParam("owner") Long ownerId,
-                                @RequestParam(name = "editable", defaultValue = "false") Boolean editable,
+    public String findAllByUser(@RequestParam(name = "editable", defaultValue = "false") Boolean editable,
+                                HttpSession session,
                                 Model model) {
-        User user = userService.findById(ownerId);
+        String jwtToken = (String) session.getAttribute("jwtToken");
+        Long loginUserId = jwtUtil.extractUserId(jwtToken);
+
+        User user = userService.findById(loginUserId);
         UserDTO ownerDTO = UserMapper.toDto(user);
 
-        List<Store> list = storeService.getStoresByOwnerId(ownerId);
+        List<Store> list = storeService.getStoresByOwnerId(loginUserId);
         List<StoreDTO> result = list.stream()
                 .map(StoreMapper::toDto)
                 .collect(Collectors.toList());
@@ -44,9 +52,12 @@ public class StoreController {
     }
 
     @GetMapping("/create")
-    public String getBlankInfo(@RequestParam("owner") Long ownerId, Model model) {
+    public String getBlankInfo(HttpSession session, Model model) {
+        String jwtToken = (String) session.getAttribute("jwtToken");
+        Long loginUserId = jwtUtil.extractUserId(jwtToken);
+
         StoreDTO dto = new StoreDTO();
-        dto.setOwnerId(ownerId);
+        dto.setOwnerId(loginUserId);
 
         model.addAttribute("store", dto);
         model.addAttribute("editable", true);

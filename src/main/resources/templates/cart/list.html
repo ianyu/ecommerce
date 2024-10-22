@@ -8,7 +8,7 @@
 <h1>購物車</h1>
 
 <!-- 當購物車不為空且有至少一個商品時顯示商品列表 -->
-<div th:if="${cartItems != null and #lists.size(cartItems) > 0}">
+<div th:if="${session.cartItems != null and #lists.size(session.cartItems) > 0}">
   <table>
     <thead>
     <tr>
@@ -20,10 +20,10 @@
     </thead>
     <tbody>
     <!-- 使用 th:each 迭代購物車中的商品 -->
-    <tr th:each="item : ${cartItems}">
-      <td th:text="${item.product.name}">商品名稱</td>
+    <tr th:each="item : ${session.cartItems}">
+      <td th:text="${productMap[item.productId].name}">商品名稱</td>
       <td th:text="${item.quantity}">數量</td>
-      <td th:text="${item.product.price}">價格</td>
+      <td th:text="${productMap[item.productId].price}">價格</td>
       <td>
         <form th:action="@{|/cart/${item.id}|}" method="post" style="display:inline;">
           <input type="hidden" name="_method" value="delete">
@@ -34,16 +34,12 @@
     </tbody>
   </table>
 
-  <!-- 顯示購物車中第一個商品的名稱 -->
-  <h2>購物車中第一個商品: <span th:text="${cartItems[0].product.name}"></span></h2>
-
   <!-- 結帳連結，只在購物車中有商品時顯示 -->
-  <a th:if="${cartItems[0].user != null}"
-     th:href="@{/orders/checkout/{userId}(userId=${cartItems[0].user.id})}">結帳</a>
+  <a th:href="@{/orders/checkout}">結帳</a>
 </div>
 
 <!-- 當購物車為空時顯示提示訊息 -->
-<div th:if="${cartItems == null or #lists.size(cartItems) == 0}">
+<div th:if="${session.cartItems == null or #lists.size(session.cartItems) == 0}">
   <p>購物車中沒有任何商品。</p>
 </div>
 

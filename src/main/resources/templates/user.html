@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org"-->
+<!--      xmlns:sec="http://www.thymeleaf.org/schema/spring-security">-->
 
 <head>
   <meta charset="UTF-8">
@@ -8,7 +10,7 @@
 
 <body>
 <div class="container-fluid">
-  <h1 th:text="${(editable ? (user.id == null  ? '新增' : '編輯') : '瀏覽')+'用戶詳細資料'}"></h1>
+  <h1 th:text="${(editable ? '編輯' : '瀏覽') + '用戶詳細資料'}"></h1>
 
   <div th:if="${!editable}">
     <div>
@@ -32,40 +34,32 @@
   </div>
 
   <form th:action="@{/user}" method="post" th:if="${editable}">
-    <input type="hidden" name="_method" value="put" th:if="${user.id != null}">
-    <input type="hidden" name="id" th:value="${user.id}" th:if="${user.id != null}">
+    <input type="hidden" name="_method" value="put">
+    <input type="hidden" name="id" th:value="${user.id}">
 
     <!-- 用戶基本資料顯示 -->
     <div>
       <label>電子郵件:</label>
-      <span th:text="${user.email}" th:if="${user.id != null}"></span>
-      <input type="text" th:field="*{user.email}" th:if="${user.id == null}" required/>
-    </div>
-    <div th:if="${user.id == null}">
-      <label>密碼:</label>
-      <input type="password" th:field="*{user.password}" required/>
+      <span th:text="${user.email}"></span>
     </div>
     <div>
       <label>用戶名稱:</label>
-      <input type="text" th:field="*{user.name}" required/>
+      <input type="text" th:field="${user.name}" required/>
     </div>
     <div>
       <label>地址:</label>
-      <input type="text" th:field="*{user.address}" required/>
+      <input type="text" th:field="${user.address}" required/>
     </div>
     <br>
 
     <div>
-      <button type="submit" th:text="${user.id != null ? '儲存' : '會員註冊'}">儲存</button>
+      <button type="submit">儲存</button>
     </div>
     <br>
   </form>
 
-  <div th:if="${session.loginUser} == null">
-    <a th:href="@{/}">返回首頁</a>
-  </div>
-  <div th:if="${session.loginUser} != null">
-    <a th:href="@{|/store/list?owner=${session.loginUser.id}|}">我的商店</a> |
+  <div>
+    <a th:href="@{|/store/list|}">我的商店</a> |
     <a th:href="@{/product/list}">瀏覽所有商品</a>
     <a th:href="@{/}">返回首頁</a>
   </div>

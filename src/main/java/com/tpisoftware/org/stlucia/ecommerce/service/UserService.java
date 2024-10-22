@@ -5,10 +5,9 @@ import com.tpisoftware.org.stlucia.ecommerce.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class UserService {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -34,4 +33,5 @@ public class UserService {
         user.setAddress(updatedUser.getAddress());
         return userRepository.save(user);
     }
+
 }

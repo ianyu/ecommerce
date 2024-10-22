@@ -9,16 +9,12 @@ import com.tpisoftware.org.stlucia.ecommerce.model.User;
 
 public class CartItemMapper {
 
-    public static UserDTO toDto(User model) {
-        UserDTO result = null;
-        if (model != null) {
-            result = new UserDTO();
-            result.setId(model.getId());
-            result.setEmail(model.getEmail());
-            result.setName(model.getName());
-            result.setAddress(model.getAddress());
-        }
-        return result;
+    public static CartItemDTO toDto(CartItem model) {
+        CartItemDTO dto = new CartItemDTO();
+        dto.setId(model.getId());
+        dto.setProductId(model.getProduct().getId());
+        dto.setQuantity(model.getQuantity());
+        return dto;
     }
 
     public static CartItem toModel(CartItemDTO dto, Product product, User user) {

@@ -28,7 +28,8 @@
       <input type="text" th:field="${category.name}" required/><br/>
     </div>
     <td>
-      <button type="submit" th:text="${category.id} != null ? '儲存' : '建立商品類別'">儲存</button> |
+      <button type="submit" th:text="${category.id} != null ? '儲存' : '建立商品類別'">儲存</button>
+      |
       <a th:href="@{/category/list}">返回類別列表</a> |
       <a th:href="@{/}">返回首頁</a>
     </td>

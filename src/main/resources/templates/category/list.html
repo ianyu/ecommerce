@@ -13,7 +13,7 @@
   </tr>
   </thead>
   <tbody>
-  <tr th:each="category : ${categories}">
+  <tr th:each="category : ${session.categories}">
     <td th:text="${category.name}"></td>
     <td>
       <a th:href="@{|/category/${category.id}|}">瀏覽</a> |

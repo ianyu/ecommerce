@@ -4,6 +4,7 @@ import com.tpisoftware.org.stlucia.ecommerce.dto.CategoryDTO;
 import com.tpisoftware.org.stlucia.ecommerce.mapper.CategoryMapper;
 import com.tpisoftware.org.stlucia.ecommerce.model.Category;
 import com.tpisoftware.org.stlucia.ecommerce.service.CategoryService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,15 +21,22 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping(value = "list")
-    public String findAll(Model model) {
-        List<Category> list = categoryService.getAllCategories();
+    public String findAll(HttpSession session) {
+        String result = "category/list";
 
-        List<CategoryDTO> result = list.stream()
-                .map(CategoryMapper::toDto)
-                .collect(Collectors.toList());
+        String jwtToken = (String) session.getAttribute("jwtToken");
+        if (jwtToken == null) {
+            result = "redirect:/auth/login";
+        } else {
+            List<Category> list = categoryService.getAllCategories();
 
-        model.addAttribute("categories", result);
-        return "category/list";
+            List<CategoryDTO> dtos = list.stream()
+                    .map(CategoryMapper::toDto)
+                    .collect(Collectors.toList());
+
+            session.setAttribute("categories", dtos);
+        }
+        return result;
     }
 
     @GetMapping("/create")
