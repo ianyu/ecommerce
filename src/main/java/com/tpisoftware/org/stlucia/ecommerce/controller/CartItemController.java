@@ -148,41 +148,45 @@ public class CartItemController {
 
             session.setAttribute(ATTRIBUTE_NAME, cartItemDTOs);
             model.addAttribute("productMap", productMap);
-            System.out.println("cartItemDTOs:" + cartItemDTOs);
-            System.out.println("productMap:" + productMap);
+        } else {
+            session.removeAttribute(ATTRIBUTE_NAME);
         }
 
         return "cart/list";
     }
 
-    @DeleteMapping("{id}")
-    public String removeCartItem(HttpSession session, @PathVariable("id") Long id) {
+    @DeleteMapping
+    public String removeCartItem(HttpSession session, @RequestParam List<Long> ids) {
         String jwtToken = (String) session.getAttribute("jwtToken");
 
         if (jwtToken == null) {
             List<CartItemDTO> cartItemDTOs = getSessionCartItemDTOs(session.getAttribute(ATTRIBUTE_NAME));
+
+//            List<CartItemDTO> newDTOs = cartItemDTOs.stream()
+//                    .filter(cartItem -> !cartItem.getId().equals(id)).toList();
             List<CartItemDTO> newDTOs = cartItemDTOs.stream()
-                    .filter(cartItem -> !cartItem.getId().equals(id)).toList();
+                    .filter(cartItem -> !ids.contains(cartItem.getId()))
+                    .toList();
             session.setAttribute(ATTRIBUTE_NAME, newDTOs);
         } else {
-            cartService.delete(id);
+            cartService.deleteByIds(ids);
         }
         return "redirect:/cart";
     }
 
-    @DeleteMapping
-    public String clearCart(HttpSession session) {
-        String jwtToken = (String) session.getAttribute("jwtToken");
-
-        if (jwtToken == null) {
-            session.removeAttribute(ATTRIBUTE_NAME);
-        } else {
-            Long loginUserId = getLoginUserId(jwtToken);
-            cartService.clearCart(loginUserId);
-
-        }
-        return "redirect:/cart";
-    }
+//    @DeleteMapping("all")
+//    public String clearCart(HttpSession session) {
+//        String jwtToken = (String) session.getAttribute("jwtToken");
+//
+//        if (jwtToken == null) {
+//            session.removeAttribute(ATTRIBUTE_NAME);
+//        } else {
+//            Long loginUserId = getLoginUserId(jwtToken);
+//            cartService.clearCart(loginUserId);
+//
+//        }
+//        return "redirect:/cart";
+//    }
 
     private Long getLoginUserId(String jwtToken) {
         return jwtUtil.extractUserId(jwtToken);

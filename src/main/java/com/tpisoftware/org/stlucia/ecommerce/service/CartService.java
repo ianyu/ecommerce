@@ -8,6 +8,7 @@ import com.tpisoftware.org.stlucia.ecommerce.repository.ProductRepository;
 import com.tpisoftware.org.stlucia.ecommerce.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -67,5 +68,17 @@ public class CartService {
 
     public void delete(Long id) {
         cartItemRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("ID list cannot be empty");
+        }
+        cartItemRepository.deleteByIdIn(ids);
+    }
+
+    public List<CartItem> findByIds(List<Long> ids) {
+        return cartItemRepository.findByIdIn(ids);
     }
 }

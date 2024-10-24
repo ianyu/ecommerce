@@ -34,13 +34,13 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @GetMapping("/register")
+    @GetMapping("register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
         return "register";
     }
 
-    @PostMapping("/register")
+    @PostMapping("register")
     public String registerUser(UserCreateDTO dto) {
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
         User user = UserMapper.toModel(dto);
@@ -49,7 +49,7 @@ public class AuthController {
         return "redirect:/auth/login";
     }
 
-    @GetMapping("/login")
+    @GetMapping("login")
     public String showLoginForm(@RequestParam(value = "errorMessage", required = false) String errorMessage,
 //                                @CookieValue(value = "token", required = false) String token,
                                 HttpSession session,
@@ -67,7 +67,7 @@ public class AuthController {
         return result;
     }
 
-    @PostMapping("/login")
+    @PostMapping("login")
     @ResponseBody
     public ResponseEntity<?> login(@RequestBody UserLoginDTO userLoginDTO,
 //                                   HttpServletResponse response,

@@ -51,7 +51,7 @@ public class StoreController {
         return "store/list";
     }
 
-    @GetMapping("/create")
+    @GetMapping("create")
     public String getBlankInfo(HttpSession session, Model model) {
         String jwtToken = (String) session.getAttribute("jwtToken");
         Long loginUserId = jwtUtil.extractUserId(jwtToken);

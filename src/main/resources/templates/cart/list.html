@@ -1,17 +1,23 @@
 ﻿<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>購物車</title>
+
+  <script th:src="@{/asserts/js/util.js}"></script>
+
 </head>
 <body>
 <h1>購物車</h1>
 
-<!-- 當購物車不為空且有至少一個商品時顯示商品列表 -->
 <div th:if="${session.cartItems != null and #lists.size(session.cartItems) > 0}">
+  <button type="button" onclick="showConfirmDeleteModal()">刪除選中商品</button>
+  <button type="button" onclick="showConfirmCreateModal()">建立訂單</button>
+  <br>
   <table>
     <thead>
     <tr>
+      <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this, '.cartCheckbox')"></th>
       <th>商品名稱</th>
       <th>數量</th>
       <th>價格</th>
@@ -19,31 +25,75 @@
     </tr>
     </thead>
     <tbody>
-    <!-- 使用 th:each 迭代購物車中的商品 -->
     <tr th:each="item : ${session.cartItems}">
-      <td th:text="${productMap[item.productId].name}">商品名稱</td>
+      <td><input type="checkbox" class="cartCheckbox" th:value="${item.id}"></td>
+      <td>
+        <a th:href="@{/product/{id}(id=${item.productId})}" style="display: block; width: 100%; height: 100%; text-decoration: none; color: inherit;" th:text="${productMap[item.productId].name}"></a>
+      </td>
       <td th:text="${item.quantity}">數量</td>
       <td th:text="${productMap[item.productId].price}">價格</td>
       <td>
-        <form th:action="@{|/cart/${item.id}|}" method="post" style="display:inline;">
-          <input type="hidden" name="_method" value="delete">
-          <button type="submit">移除商品</button>
-        </form>
+        <button type="button" th:data-id="${item.id}" onclick="showConfirmDeleteModal(this.dataset.id)">刪除</button>
       </td>
+
     </tr>
     </tbody>
   </table>
 
-  <!-- 結帳連結，只在購物車中有商品時顯示 -->
-  <a th:href="@{/orders/checkout}">結帳</a>
+  <form id="deleteCartForm" method="post" th:action="@{/cart}">
+    <input type="hidden" name="_method" value="delete">
+    <input type="hidden" name="ids" id="deleteCartIds">
+  </form>
+
+  <form id="createCartForm" method="post" th:action="@{/order}">
+    <input type="hidden" name="ids" id="createCartIds">
+  </form>
+
+  <div th:replace="~{commons/deleteModal :: confirmDeleteModal}"></div>
+  <div th:replace="~{commons/createModal :: confirmCreateModal}"></div>
+
+  <script>
+    let chooseIds = [];
+
+    function showConfirmDeleteModal(cartId) {
+      if (cartId) {
+        chooseIds = [cartId]; // single delete
+        document.getElementById('confirmDeleteMessage').innerText = `confirm delete this cart?`;
+      } else {
+        const selectedIds = Array.from(document.querySelectorAll('.cartCheckbox:checked')).map(checkbox => checkbox.value);
+        if (selectedIds.length === 0) {
+          alert("at least choose a item");
+          return;
+        }
+        chooseIds = selectedIds; // multiple delete
+        document.getElementById('confirmDeleteMessage').innerText = `confirm to delete ${selectedIds.length} item?`;
+      }
+      document.getElementById('confirmDeleteModal').style.display = 'block';
+    }
+
+    function showConfirmCreateModal() {
+      const selectedIds = Array.from(document.querySelectorAll('.cartCheckbox:checked')).map(checkbox => checkbox.value);
+      if (selectedIds.length === 0) {
+        alert("at least choose a item");
+        return;
+      }
+      chooseIds = selectedIds;
+      document.getElementById('confirmCreateMessage').innerText = `confirm to create ${selectedIds.length} item?`;
+      document.getElementById('confirmCreateModal').style.display = 'block';
+    }
+
+    function confirmSelected(method) {
+      document.getElementById(`${method}CartIds`).value = chooseIds.join(',');
+      document.getElementById(`${method}CartForm`).submit();
+    }
+
+  </script>
 </div>
 
-<!-- 當購物車為空時顯示提示訊息 -->
 <div th:if="${session.cartItems == null or #lists.size(session.cartItems) == 0}">
   <p>購物車中沒有任何商品。</p>
 </div>
 
-<!-- 返回首頁或繼續購物 -->
 <a th:href="@{/}">返回首頁</a>
 </body>
 </html>

@@ -1,10 +1,7 @@
 package com.tpisoftware.org.stlucia.ecommerce.service;
 
 import com.tpisoftware.org.stlucia.ecommerce.model.Product;
-import com.tpisoftware.org.stlucia.ecommerce.model.Store;
-import com.tpisoftware.org.stlucia.ecommerce.repository.CategoryRepository;
 import com.tpisoftware.org.stlucia.ecommerce.repository.ProductRepository;
-import com.tpisoftware.org.stlucia.ecommerce.repository.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,14 +9,9 @@ import java.util.List;
 
 @Service
 public class ProductService {
+
     @Autowired
     private ProductRepository productRepository;
-
-    @Autowired
-    private StoreRepository storeRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
 
     // 新增商品
     public Product addProduct(Product product) {

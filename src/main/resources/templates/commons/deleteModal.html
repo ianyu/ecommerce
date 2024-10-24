@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="confirmDeleteModal">
+  <div id="confirmDeleteModal" style="display:none;">
+    <p id="confirmDeleteMessage"></p>
+    <button onclick="confirmSelected('delete')">確定</button>
+    <button onclick="closeModal('confirmDeleteModal')">取消</button>
+  </div>
+</div>
+</body>
+</html>

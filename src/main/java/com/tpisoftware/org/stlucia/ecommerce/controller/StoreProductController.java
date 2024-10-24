@@ -47,7 +47,7 @@ public class StoreProductController {
         return "store/product/list";
     }
 
-    @GetMapping("/blank")
+    @GetMapping("blank")
     public String getBlankInfo(@PathVariable("storeId") Long storeId, Model model) {
         ProductDTO dto = new ProductDTO();
         dto.setStoreId(storeId);

@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>訂單列表</title>
+</head>
+<body>
+<h1>訂單列表</h1>
+
+<div>
+  <table>
+    <thead>
+    <tr>
+      <th>訂單編號</th>
+      <th>訂單日期</th>
+      <th>訂單狀態</th>
+      <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="order : ${orders}">
+      <td th:text="${order.id}"></td>
+      <td th:text="${#dates.format(order.orderDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+      <td th:text="${order.status}"></td>
+      <td>
+        <a th:href="@{/order/{id}(id=${order.id})}">查看詳情</a> |
+        <form th:action="@{/orders/{id}/status(id=${order.id})}" method="post" style="display:inline;">
+          <select name="status">
+            <option value="PENDING">待確認</option>
+            <option value="SHIPPED">已發貨</option>
+            <option value="DELIVERED">已送達</option>
+            <option value="COMPLETED">已完成</option>
+          </select>
+          <button type="submit">變更狀態</button>
+        </form>
+        |
+        <form th:action="@{/orders/{id}/cancel(id=${order.id})}" method="post" style="display:inline;">
+          <button type="submit">取消訂單</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <a th:href="@{/cart}">返回購物車</a>
+</div>
+
+<!-- 返回首頁或繼續購物 -->
+<a th:href="@{/}">返回首頁</a>
+</body>
+</html>

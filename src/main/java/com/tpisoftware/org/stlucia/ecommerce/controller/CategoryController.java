@@ -39,7 +39,7 @@ public class CategoryController {
         return result;
     }
 
-    @GetMapping("/create")
+    @GetMapping("create")
     public String getBlankInfo(Model model) {
         model.addAttribute("category", new CategoryDTO());
         model.addAttribute("editable", true);
@@ -55,7 +55,7 @@ public class CategoryController {
         return "redirect:/category/" + category.getId();
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping("{id}")
     public String browse(@PathVariable("id") Long id,
                          @RequestParam(name = "editable", defaultValue = "false") Boolean editable,
                          Model model) {
