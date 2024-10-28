@@ -1,0 +1,46 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  application:
+    name: ecommerce
+
+  datasource:
+    url: jdbc:postgresql://postgresdb:5432/ecommerce
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+
+  thymeleaf:
+    prefix: classpath:/templates/   # 模板文件路徑，請確認路徑為 /templates/
+    suffix: .html                  # 模板文件的擴展名
+    mode: HTML                     # Thymeleaf 模板解析模式
+    encoding: UTF-8                # 編碼方式
+    cache: false                   # 禁用緩存（建議開發環境下禁用緩存）
+
+server:
+  port: 8080
+
+  logging:
+    file:
+      name: "ecommerce.log"
+      path: /var/log
+
+    level:
+      root: INFO                                # General logging level for the application
+      org.springframework.data.jpa.repository: DEBUG  # Log JPA repository method calls
+      org.hibernate.SQL: DEBUG                   # Log SQL statements executed by Hibernate
+      org.hibernate.type.descriptor.sql: TRACE   # Log SQL parameter binding

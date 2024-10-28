@@ -57,7 +57,7 @@ public class UserController {
                         Model model,
                         HttpSession session) {
         // 驗證用戶是否存在並匹配密碼
-        User user = userService.findByEmail(email);
+        UserDTO user = userService.findByEmail(email);
         if (user != null && user.getPassword().equals(password)) {
             session.setAttribute("loginUser", user.getName());
             model.addAttribute("user", user);

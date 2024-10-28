@@ -1,11 +1,10 @@
 package com.tpisoftware.org.stlucia.ecommerce.service;
 
+import com.tpisoftware.org.stlucia.ecommerce.dto.UserDTO;
 import com.tpisoftware.org.stlucia.ecommerce.model.User;
 import com.tpisoftware.org.stlucia.ecommerce.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -18,8 +17,10 @@ public class UserService {
     }
 
     // 根據 Email 查詢用戶
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public UserDTO findByEmail(String email) {
+        User  user = userRepository.findByEmail(email).orElseThrow( ()-> new IllegalArgumentException("找不到用戶 Email" + email));
+        return new UserDTO(user.getId(),user.getEmail(),"",user.getName(),user.getAddress());
+        //return userRepository.findByEmail(email).orElseThrow()-> new IllegalArgumentException("找不到用戶 Email" + email);
     }
 
     // 根據 ID 查詢用戶（新增方法）
