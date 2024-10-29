@@ -32,6 +32,7 @@
     </table>
     <a th:href="@{/}">返回首頁</a>
     <a th:href="@{|/cart|}">去購物車頁</a>
+    <a th:href="@{/auth/login}" th:if="${session.jwtToken == null}">登入</a>
   </div>
 </div>
 </body>

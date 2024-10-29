@@ -8,6 +8,7 @@ import com.tpisoftware.org.stlucia.ecommerce.model.User;
 import com.tpisoftware.org.stlucia.ecommerce.service.CartService;
 import com.tpisoftware.org.stlucia.ecommerce.service.UserService;
 import com.tpisoftware.org.stlucia.ecommerce.util.JwtUtil;
+import com.tpisoftware.org.stlucia.ecommerce.util.ListUtil;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -70,19 +71,17 @@ public class AuthController {
     @PostMapping("login")
     @ResponseBody
     public ResponseEntity<?> login(@RequestBody UserLoginDTO userLoginDTO,
-//                                   HttpServletResponse response,
                                    HttpSession session) {
         try {
             authenticate(userLoginDTO.getUsername(), userLoginDTO.getPassword());
 
-            // 生成JWT Token
-            User user = userService.findByEmail(userLoginDTO.getUsername());
-            String jwtToken = jwtUtil.generateToken(user);
+            String jwtToken = generateJwtToken(userLoginDTO);
 
             session.setAttribute("jwtToken", jwtToken);
 
+            Object attrCartItems = session.getAttribute("cartItems");
+            List<CartItemDTO> sessionCartItems = ListUtil.convertTo(attrCartItems, CartItemDTO.class);
 
-            List<CartItemDTO> sessionCartItems = (List<CartItemDTO>) session.getAttribute("cartItems");
             if (sessionCartItems != null) {
                 Long loginUserId = jwtUtil.extractUserId(jwtToken);
                 cartService.clearCart(loginUserId);
@@ -110,4 +109,11 @@ public class AuthController {
         }
         return true;
     }
+
+    private String generateJwtToken(UserLoginDTO userLoginDTO) {
+        User user = userService.findByEmail(userLoginDTO.getUsername());
+        String jwtToken = jwtUtil.generateToken(user);
+        return jwtToken;
+    }
+
 }
