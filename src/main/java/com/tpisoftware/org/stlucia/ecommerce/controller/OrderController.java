@@ -38,7 +38,6 @@ public class OrderController {
     static final String SINGLE_ATTRIBUTE_NAME = "order";
     static final String LIST_ATTRIBUTE_NAME = "orders";
 
-    // 生成登入者的訂單（從購物車轉為訂單）
     @PostMapping
     @Transactional
     public String createByCartItem(HttpSession session, @RequestParam(name = "ids") List<Long> cartItemIds) {
@@ -62,9 +61,8 @@ public class OrderController {
         return result;
     }
 
-    // 查詢登入者的所有訂單
     @GetMapping("list")
-    public String getUserOrders(HttpSession session, Model model) {
+    public String getLoginUserOrders(HttpSession session, Model model) {
         String result;
 
         String jwtToken = (String) session.getAttribute("jwtToken");
@@ -109,11 +107,10 @@ public class OrderController {
         return "redirect:/order/" + orderId;
     }
 
-    // 取消訂單
     @DeleteMapping("{orderId}")
     public String cancelOrder(@PathVariable Long orderId) {
         orderService.cancelOrder(orderId);
-        return "redirect:/orders/user/" + orderService.getOrderById(orderId).getUser().getId();
+        return "redirect:/order/list";
     }
 
     private Order transferToOrder(User user, List<CartItem> cartItems) {

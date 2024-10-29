@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>擁有的商品列表</title>
 </head>
@@ -33,6 +33,7 @@
     <a th:href="@{/}">返回首頁</a>
     <a th:href="@{|/cart|}">去購物車頁</a>
     <a th:href="@{/auth/login}" th:if="${session.jwtToken == null}">登入</a>
+    <a th:href="@{/order/list}" th:if="${session.jwtToken != null}">我的訂單</a>
   </div>
 </div>
 </body>

@@ -1,5 +1,6 @@
 package com.tpisoftware.org.stlucia.ecommerce.service;
 
+import com.tpisoftware.org.stlucia.ecommerce.exception.ExceptionMessages;
 import com.tpisoftware.org.stlucia.ecommerce.model.Order;
 import com.tpisoftware.org.stlucia.ecommerce.repository.OrderRepository;
 import jakarta.transaction.Transactional;
@@ -79,12 +80,17 @@ public class OrderService {
      * @param orderId 訂單 ID
      */
     public void cancelOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("找不到訂單 ID：" + orderId));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "order", orderId)));
+
         order.setStatus("CANCELLED");
         orderRepository.save(order);
 
         // 發送訂單取消通知（使用 RabbitMQ）
-        notificationProducerService.sendNotification(order.getUser().getId(), "訂單取消", "您的訂單已被取消。");
+        notificationProducerService.sendNotification(
+                order.getUser().getId(),
+                "cancel order",
+                "Order with ID " + orderId + " has been canceled.");
     }
+
 }

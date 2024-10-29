@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>訂單列表</title>
@@ -24,7 +24,7 @@
       <td th:text="${order.status}"></td>
       <td>
         <a th:href="@{/order/{id}(id=${order.id})}">查看詳情</a> |
-        <form th:action="@{/orders/{id}/status(id=${order.id})}" method="post" style="display:inline;">
+        <form th:action="@{/order/{id}/status(id=${order.id})}" method="post" style="display:inline;">
           <select name="status">
             <option value="PENDING">待確認</option>
             <option value="SHIPPED">已發貨</option>
@@ -34,7 +34,8 @@
           <button type="submit">變更狀態</button>
         </form>
         |
-        <form th:action="@{/orders/{id}/cancel(id=${order.id})}" method="post" style="display:inline;">
+        <form th:action="@{/order/{id}(id=${order.id})}" method="post" style="display:inline;">
+          <input type="hidden" name="_method" value="delete">
           <button type="submit">取消訂單</button>
         </form>
       </td>
