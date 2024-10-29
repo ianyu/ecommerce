@@ -1,5 +1,6 @@
 package com.tpisoftware.org.stlucia.ecommerce.service;
 
+import com.tpisoftware.org.stlucia.ecommerce.exception.ExceptionMessages;
 import com.tpisoftware.org.stlucia.ecommerce.model.Product;
 import com.tpisoftware.org.stlucia.ecommerce.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,8 @@ public class ProductService {
 
     // 根據商品 ID 查詢商品
     public Product getProductById(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("找不到商品 ID：" + id));
+        return productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "product", id)));
     }
 
     // 根據類別 ID 查詢所有商品
@@ -35,7 +37,8 @@ public class ProductService {
 
     // 更新商品資訊
     public Product updateProduct(Long id, Product updatedProduct) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("找不到商品 ID：" + id));
+        Product product = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "product", id)));
         product.setName(updatedProduct.getName());
         product.setDescription(updatedProduct.getDescription());
         product.setPrice(updatedProduct.getPrice());
@@ -56,4 +59,5 @@ public class ProductService {
     public List<Product> findByIdIn(List<Long> ids) {
         return productRepository.findByIdIn(ids);
     }
+
 }

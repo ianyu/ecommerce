@@ -28,11 +28,10 @@ public class OrderService {
     public Order createOrder(Order order) {
         Order savedOrder = orderRepository.save(order);
 
-        // 發送訂單生成通知（使用 RabbitMQ）
         notificationProducerService.sendNotification(
                 order.getUser().getId(),
-                "訂單已生成",
-                "您的訂單已成功建立，訂單編號：" + savedOrder.getId());
+                "Create Order",
+                "Order created successfully, id: " + savedOrder.getId());
 
         return savedOrder;
     }
@@ -54,7 +53,8 @@ public class OrderService {
      * @return 查詢到的訂單
      */
     public Order getOrderById(Long id) {
-        return orderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("找不到訂單 ID：" + id));
+        return orderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "order", id)));
     }
 
     /**
@@ -64,14 +64,14 @@ public class OrderService {
      * @param status  新的訂單狀態
      */
     public void updateOrderStatus(Long orderId, String status) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("找不到訂單 ID：" + orderId));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "order", orderId)));
         order.setStatus(status);
         orderRepository.save(order);
 
         // 發送訂單狀態變更通知（使用 RabbitMQ）
-        notificationProducerService.sendNotification(order.getUser().getId(), "訂單狀態變更",
-                "您的訂單狀態已變更為：" + status);
+        notificationProducerService.sendNotification(order.getUser().getId(), "Order Status Change",
+                "Your order status is now " + status + ".");
     }
 
     /**
@@ -86,11 +86,10 @@ public class OrderService {
         order.setStatus("CANCELLED");
         orderRepository.save(order);
 
-        // 發送訂單取消通知（使用 RabbitMQ）
         notificationProducerService.sendNotification(
                 order.getUser().getId(),
-                "cancel order",
-                "Order with ID " + orderId + " has been canceled.");
+                "Cancel order",
+                "Order has been canceled, id: " + orderId + ".");
     }
 
 }

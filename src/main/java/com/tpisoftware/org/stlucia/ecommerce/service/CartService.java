@@ -1,5 +1,6 @@
 package com.tpisoftware.org.stlucia.ecommerce.service;
 
+import com.tpisoftware.org.stlucia.ecommerce.exception.ExceptionMessages;
 import com.tpisoftware.org.stlucia.ecommerce.model.CartItem;
 import com.tpisoftware.org.stlucia.ecommerce.model.Product;
 import com.tpisoftware.org.stlucia.ecommerce.model.User;
@@ -25,8 +26,10 @@ public class CartService {
 
     // 新增商品到購物車
     public CartItem addToCart(Long userId, Long productId, int quantity) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("找不到用戶 ID：" + userId));
-        Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("找不到商品 ID：" + productId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "user", userId)));
+        Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "product", productId)));
 
         CartItem cartItem = new CartItem();
         cartItem.setUser(user);
@@ -73,7 +76,7 @@ public class CartService {
     @Transactional
     public void deleteByIds(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
-            throw new IllegalArgumentException("ID list cannot be empty");
+            throw new IllegalArgumentException("request list cannot be empty.");
         }
         cartItemRepository.deleteByIdIn(ids);
     }

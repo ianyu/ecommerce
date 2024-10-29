@@ -1,5 +1,6 @@
 package com.tpisoftware.org.stlucia.ecommerce.service;
 
+import com.tpisoftware.org.stlucia.ecommerce.exception.ExceptionMessages;
 import com.tpisoftware.org.stlucia.ecommerce.model.Category;
 import com.tpisoftware.org.stlucia.ecommerce.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,8 @@ public class CategoryService {
 
     // 根據 ID 查詢商品類別
     public Category findById(Long id) {
-        return categoryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("找不到類別 ID：" + id));
+        return categoryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "category", id)));
     }
 
     // 更新商品類別

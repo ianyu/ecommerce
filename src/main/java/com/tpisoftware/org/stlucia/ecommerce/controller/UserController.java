@@ -4,7 +4,6 @@ import com.tpisoftware.org.stlucia.ecommerce.dto.user.UserDTO;
 import com.tpisoftware.org.stlucia.ecommerce.mapper.UserMapper;
 import com.tpisoftware.org.stlucia.ecommerce.model.User;
 import com.tpisoftware.org.stlucia.ecommerce.service.UserService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,13 +30,12 @@ public class UserController {
     }
 
     @PutMapping
-    public String update(UserDTO userDTO, HttpSession session) {
+    public String update(UserDTO userDTO) {
         User user = new User();
         user.setName(userDTO.getName());
         user.setAddress(userDTO.getAddress());
 
-        userService.updateUser(userDTO.getId(), user);
-        // 驗證成功，重定向到會員資料頁面
+        userService.update(userDTO.getId(), user);
         return "redirect:/user/" + userDTO.getId();
     }
 

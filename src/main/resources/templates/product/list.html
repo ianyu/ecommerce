@@ -34,6 +34,7 @@
     <a th:href="@{|/cart|}">去購物車頁</a>
     <a th:href="@{/auth/login}" th:if="${session.jwtToken == null}">登入</a>
     <a th:href="@{/order/list}" th:if="${session.jwtToken != null}">我的訂單</a>
+    <a th:href="@{/notification/list}" th:if="${session.jwtToken != null}">通知</a>
   </div>
 </div>
 </body>

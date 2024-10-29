@@ -94,7 +94,7 @@ public class StoreController {
         store.setAddress(dto.getAddress());
         store.setContact(dto.getContact());
 
-        storeService.updateStore(dto.getId(), store);
+        storeService.update(dto.getId(), store);
 
         return "redirect:/store/" + dto.getId();
     }

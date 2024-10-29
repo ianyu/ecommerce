@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>會員通知列表</title>
+</head>
+<body>
+<h1>會員通知列表</h1>
+<table>
+  <thead>
+  <tr>
+    <th>通知標題</th>
+    <th>內容摘要</th>
+    <th>發送日期</th>
+    <th>已讀狀態</th>
+    <th>操作</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="notification : ${notifications}">
+    <td th:text="${notification.title}"></td>
+    <td th:text="${#strings.length(notification.content) > 20 ? #strings.substring(notification.content, 0, 20) + '...' : notification.content}"></td>
+<!--    <td th:text="${notification.content.substring(0, 20)} + '...'"></td>-->
+    <td th:text="${#dates.format(notification.date, 'yyyy-MM-dd HH:mm:ss')}"></td>
+    <td th:text="${notification.isRead ? '已讀' : '未讀'}"></td>
+    <td>
+      <a th:href="@{/notification/{id}(id=${notification.id})}">查看詳情</a> |
+      <form th:action="@{/notification/{id}(id=${notification.id})}" method="post" style="display:inline;" th:if="${!notification.isRead}">
+        <input type="hidden" name="_method" value="put">
+        <button type="submit">標記為已讀</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<a href="/">返回首頁</a>
+</body>
+</html>

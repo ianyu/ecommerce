@@ -1,5 +1,6 @@
 package com.tpisoftware.org.stlucia.ecommerce.service;
 
+import com.tpisoftware.org.stlucia.ecommerce.exception.ExceptionMessages;
 import com.tpisoftware.org.stlucia.ecommerce.model.Store;
 import com.tpisoftware.org.stlucia.ecommerce.repository.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,14 @@ public class StoreService {
 
     // 根據商店 ID 查詢商店（新增方法）
     public Store findById(Long id) {
-        return storeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("找不到商店 ID：" + id));
+        return storeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "store", id)));
     }
 
     // 更新商店資訊
-    public Store updateStore(Long id, Store updatedStore) {
-        Store store = storeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("找不到商店 ID：" + id));
+    public Store update(Long id, Store updatedStore) {
+        Store store = storeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "store", id)));
         store.setName(updatedStore.getName());
         store.setAddress(updatedStore.getAddress());
         store.setContact(updatedStore.getContact());
