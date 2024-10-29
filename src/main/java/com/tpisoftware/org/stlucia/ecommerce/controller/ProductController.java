@@ -9,6 +9,7 @@ import com.tpisoftware.org.stlucia.ecommerce.model.Product;
 import com.tpisoftware.org.stlucia.ecommerce.service.CartService;
 import com.tpisoftware.org.stlucia.ecommerce.service.CategoryService;
 import com.tpisoftware.org.stlucia.ecommerce.service.ProductService;
+import com.tpisoftware.org.stlucia.ecommerce.util.JwtUtil;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,6 +34,9 @@ public class ProductController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @GetMapping(value = "list")
     public String findAllByCategoryId(@RequestParam(name = "category", required = false) Long categoryId,
@@ -79,7 +83,8 @@ public class ProductController {
             if (jwtToken == null) {
                 cartItemDTO = getSessionCartItemDTO(session, product);
             } else {
-                cartItemDTO = getUserCartItemDTO(product);
+                Long loginUserId = jwtUtil.extractUserId(jwtToken);
+                cartItemDTO = getUserCartItemDTO(loginUserId, product.getId());
             }
 
             session.setAttribute("categories", categories);
@@ -103,12 +108,12 @@ public class ProductController {
         return cartItemDTO;
     }
 
-    private CartItemDTO getUserCartItemDTO(Product product) {
+    private CartItemDTO getUserCartItemDTO(Long userId, Long productId) {
         CartItemDTO cartItemDTO;
-        CartItem cartItem = cartService.getCartItemsByProductId(product.getId());
+        CartItem cartItem = cartService.findByUserIdAndProductId(userId, productId);
 
         cartItemDTO = new CartItemDTO();
-        cartItemDTO.setProductId(product.getId());
+        cartItemDTO.setProductId(productId);
         if (cartItem != null) {
             cartItemDTO.setId(cartItem.getId());
             cartItemDTO.setQuantity(cartItem.getQuantity());

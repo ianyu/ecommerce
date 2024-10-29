@@ -49,21 +49,6 @@ public class CartService {
         return cartItemRepository.findByUserId(userId);
     }
 
-    public CartItem getCartItemsByProductId(Long productId) {
-        CartItem cartItem = null;
-        List<CartItem> list = cartItemRepository.findByProductId(productId);
-        if (list.size() > 0) {
-            cartItem = list.get(0);
-        }
-        return cartItem;
-    }
-
-    // 根據用戶 ID 和商品 ID 移除購物車中的商品
-    public void removeItem(Long userId, Long productId) {
-        cartItemRepository.deleteByUserIdAndProductId(userId, productId);
-    }
-
-    // 清空購物車
     public void clearCart(Long userId) {
         List<CartItem> items = getCartItems(userId);
         cartItemRepository.deleteAll(items);
@@ -83,5 +68,14 @@ public class CartService {
 
     public List<CartItem> findByIds(List<Long> ids) {
         return cartItemRepository.findByIdIn(ids);
+    }
+
+    public CartItem findByUserIdAndProductId(Long userId, Long productId) {
+        CartItem cartItem = null;
+        List<CartItem> list = cartItemRepository.findByUserIdAndProductId(userId, productId);
+        if (list.size() > 0) {
+            cartItem = list.get(0);
+        }
+        return cartItem;
     }
 }
