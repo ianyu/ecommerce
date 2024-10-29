@@ -25,6 +25,7 @@
       <td>
         <a th:href="@{/order/{id}(id=${order.id})}">查看詳情</a> |
         <form th:action="@{/order/{id}/status(id=${order.id})}" method="post" style="display:inline;">
+          <input type="hidden" name="_method" value="put">
           <select name="status">
             <option value="PENDING">待確認</option>
             <option value="SHIPPED">已發貨</option>

@@ -40,7 +40,7 @@ public class OrderController {
 
     @PostMapping
     @Transactional
-    public String createByCartItem(HttpSession session, @RequestParam(name = "ids") List<Long> cartItemIds) {
+    public String createFromCartItem(HttpSession session, @RequestParam(name = "ids") List<Long> cartItemIds) {
         String result;
 
         String jwtToken = (String) session.getAttribute("jwtToken");
@@ -62,7 +62,7 @@ public class OrderController {
     }
 
     @GetMapping("list")
-    public String getLoginUserOrders(HttpSession session, Model model) {
+    public String findAllByLoginUser(HttpSession session, Model model) {
         String result;
 
         String jwtToken = (String) session.getAttribute("jwtToken");
@@ -78,9 +78,8 @@ public class OrderController {
         return result;
     }
 
-    // 根據訂單 ID 查詢訂單詳情
     @GetMapping("{id}")
-    public String getOrderDetails(HttpSession session, @PathVariable Long id, Model model) {
+    public String browse(HttpSession session, @PathVariable Long id, Model model) {
         String result;
 
         String jwtToken = (String) session.getAttribute("jwtToken");
@@ -100,15 +99,14 @@ public class OrderController {
         return result;
     }
 
-    // 更新訂單狀態（如：發貨、完成等）
     @PutMapping("{orderId}/status")
-    public String updateOrderStatus(@PathVariable Long orderId, @RequestParam String status) {
+    public String updateStatus(@PathVariable Long orderId, @RequestParam String status) {
         orderService.updateOrderStatus(orderId, status);
-        return "redirect:/order/" + orderId;
+        return "redirect:/order/list";
     }
 
     @DeleteMapping("{orderId}")
-    public String cancelOrder(@PathVariable Long orderId) {
+    public String cancel(@PathVariable Long orderId) {
         orderService.cancelOrder(orderId);
         return "redirect:/order/list";
     }
