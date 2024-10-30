@@ -1,10 +1,8 @@
 package com.tpisoftware.org.stlucia.ecommerce.service;
 
+import com.tpisoftware.org.stlucia.ecommerce.exception.ExceptionMessages;
 import com.tpisoftware.org.stlucia.ecommerce.model.Product;
-import com.tpisoftware.org.stlucia.ecommerce.model.Store;
-import com.tpisoftware.org.stlucia.ecommerce.repository.CategoryRepository;
 import com.tpisoftware.org.stlucia.ecommerce.repository.ProductRepository;
-import com.tpisoftware.org.stlucia.ecommerce.repository.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,14 +10,9 @@ import java.util.List;
 
 @Service
 public class ProductService {
+
     @Autowired
     private ProductRepository productRepository;
-
-    @Autowired
-    private StoreRepository storeRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
 
     // 新增商品
     public Product addProduct(Product product) {
@@ -33,7 +26,8 @@ public class ProductService {
 
     // 根據商品 ID 查詢商品
     public Product getProductById(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("找不到商品 ID：" + id));
+        return productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "product", id)));
     }
 
     // 根據類別 ID 查詢所有商品
@@ -43,7 +37,8 @@ public class ProductService {
 
     // 更新商品資訊
     public Product updateProduct(Long id, Product updatedProduct) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("找不到商品 ID：" + id));
+        Product product = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "product", id)));
         product.setName(updatedProduct.getName());
         product.setDescription(updatedProduct.getDescription());
         product.setPrice(updatedProduct.getPrice());
@@ -56,4 +51,13 @@ public class ProductService {
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
+
+    public List<Product> getProducts() {
+        return productRepository.findAll();
+    }
+
+    public List<Product> findByIdIn(List<Long> ids) {
+        return productRepository.findByIdIn(ids);
+    }
+
 }

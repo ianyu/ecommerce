@@ -1,18 +1,12 @@
 package com.tpisoftware.org.stlucia.ecommerce.service;
 
-import com.tpisoftware.org.stlucia.ecommerce.model.CartItem;
+import com.tpisoftware.org.stlucia.ecommerce.exception.ExceptionMessages;
 import com.tpisoftware.org.stlucia.ecommerce.model.Order;
-import com.tpisoftware.org.stlucia.ecommerce.model.OrderItem;
-import com.tpisoftware.org.stlucia.ecommerce.model.User;
-import com.tpisoftware.org.stlucia.ecommerce.repository.CartItemRepository;
 import com.tpisoftware.org.stlucia.ecommerce.repository.OrderRepository;
-import com.tpisoftware.org.stlucia.ecommerce.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -22,52 +16,22 @@ public class OrderService {
     private OrderRepository orderRepository;
 
     @Autowired
-    private CartItemRepository cartItemRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private NotificationProducerService notificationProducerService; // 使用 RabbitMQ 的 Producer
 
     /**
-     * 生成訂單，並將購物車中的商品轉為訂單
+     * 生成訂單，並發送訂單通知
      *
-     * @param userId 會員 ID
+     * @param order 約定生成的訂單
      * @return 新生成的訂單
      */
     @Transactional
-    public Order createOrder(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("找不到用戶 ID：" + userId));
-        List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
-
-        // 創建新訂單並設定基本資訊
-        Order order = new Order();
-        order.setUser(user);
-        order.setOrderDate(new Date());
-        order.setStatus("PENDING"); // 初始訂單狀態設置為 PENDING
-
-        // 將購物車中的商品轉為訂單項目
-        List<OrderItem> orderItems = new ArrayList<>();
-        for (CartItem cartItem : cartItems) {
-            OrderItem orderItem = new OrderItem();
-            orderItem.setProduct(cartItem.getProduct());
-            orderItem.setOrder(order);
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPrice(cartItem.getProduct().getPrice() * cartItem.getQuantity());
-            orderItems.add(orderItem);
-        }
-        order.setOrderItems(orderItems);
-
-        // 清空購物車
-        cartItemRepository.deleteAll(cartItems);
-
-        // 儲存新訂單
+    public Order createOrder(Order order) {
         Order savedOrder = orderRepository.save(order);
 
-        // 發送訂單生成通知（使用 RabbitMQ）
-        notificationProducerService.sendNotification(userId, "訂單已生成", "您的訂單已成功建立，訂單編號：" + savedOrder.getId());
+        notificationProducerService.sendNotification(
+                order.getUser().getId(),
+                "Create Order",
+                "Order created successfully, id: " + savedOrder.getId());
 
         return savedOrder;
     }
@@ -89,7 +53,8 @@ public class OrderService {
      * @return 查詢到的訂單
      */
     public Order getOrderById(Long id) {
-        return orderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("找不到訂單 ID：" + id));
+        return orderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "order", id)));
     }
 
     /**
@@ -99,14 +64,14 @@ public class OrderService {
      * @param status  新的訂單狀態
      */
     public void updateOrderStatus(Long orderId, String status) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("找不到訂單 ID：" + orderId));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "order", orderId)));
         order.setStatus(status);
         orderRepository.save(order);
 
         // 發送訂單狀態變更通知（使用 RabbitMQ）
-        notificationProducerService.sendNotification(order.getUser().getId(), "訂單狀態變更",
-                "您的訂單狀態已變更為：" + status);
+        notificationProducerService.sendNotification(order.getUser().getId(), "Order Status Change",
+                "Your order status is now " + status + ".");
     }
 
     /**
@@ -115,12 +80,16 @@ public class OrderService {
      * @param orderId 訂單 ID
      */
     public void cancelOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("找不到訂單 ID：" + orderId));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException(
+                String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "order", orderId)));
+
         order.setStatus("CANCELLED");
         orderRepository.save(order);
 
-        // 發送訂單取消通知（使用 RabbitMQ）
-        notificationProducerService.sendNotification(order.getUser().getId(), "訂單取消", "您的訂單已被取消。");
+        notificationProducerService.sendNotification(
+                order.getUser().getId(),
+                "Cancel order",
+                "Order has been canceled, id: " + orderId + ".");
     }
+
 }

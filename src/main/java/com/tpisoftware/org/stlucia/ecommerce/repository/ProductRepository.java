@@ -11,5 +11,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByStoreId(Long storeId); // 根據商店 ID 查詢商品
     List<Product> findByCategoryId(Long categoryId); // 根據類別 ID 查詢商品
 
+    List<Product> findByIdIn(List<Long> ids);
 }
 

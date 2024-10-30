@@ -1,95 +1,124 @@
 package com.tpisoftware.org.stlucia.ecommerce.controller;
 
+import com.tpisoftware.org.stlucia.ecommerce.dto.CartItemDTO;
 import com.tpisoftware.org.stlucia.ecommerce.dto.ProductDTO;
+import com.tpisoftware.org.stlucia.ecommerce.mapper.ProductMapper;
+import com.tpisoftware.org.stlucia.ecommerce.model.CartItem;
 import com.tpisoftware.org.stlucia.ecommerce.model.Category;
 import com.tpisoftware.org.stlucia.ecommerce.model.Product;
-import com.tpisoftware.org.stlucia.ecommerce.model.Store;
+import com.tpisoftware.org.stlucia.ecommerce.service.CartService;
 import com.tpisoftware.org.stlucia.ecommerce.service.CategoryService;
 import com.tpisoftware.org.stlucia.ecommerce.service.ProductService;
-import com.tpisoftware.org.stlucia.ecommerce.service.StoreService;
+import com.tpisoftware.org.stlucia.ecommerce.util.JwtUtil;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/products")
+@RequestMapping("/product")
 public class ProductController {
     @Autowired
     private ProductService productService;
 
     @Autowired
-    private StoreService storeService;
+    private CartService cartService;
 
     @Autowired
     private CategoryService categoryService;
 
-//    // 顯示新增商品的表單
-//    @GetMapping("/add/{storeId}")
-//    public String showAddProductForm(@PathVariable Long storeId, Model model) {
-//        model.addAttribute("product", new ProductDTO());
-//        model.addAttribute("storeId", storeId);
-//        model.addAttribute("categories", categoryService.getAllCategories());
-//        return "product-add";
-//    }
-//
-//    // 新增商品
-//    @PostMapping("/add")
-//    public String addProduct(@ModelAttribute ProductDTO productDTO) {
-//        Store store = storeService.getStoreById(productDTO.getStoreId()); // 找到對應商店
-//        Category category = categoryService.getCategoryById(productDTO.getCategoryId()); // 找到對應類別
-//
-//        Product product = new Product();
-//        product.setName(productDTO.getName());
-//        product.setDescription(productDTO.getDescription());
-//        product.setPrice(productDTO.getPrice());
-//        product.setStock(productDTO.getStock());
-//        product.setStore(store);
-//        product.setCategory(category);
-//
-//        productService.addProduct(product);
-//        return "redirect:/products/store/" + productDTO.getStoreId();
-//    }
-//
-//    // 根據商店 ID 查詢所有商品
-//    @GetMapping("/store/{storeId}")
-//    public String getProductsByStore(@PathVariable Long storeId, Model model) {
-//        List<Product> products = productService.getProductsByStoreId(storeId);
-//        model.addAttribute("products", products);
-//        return "product-list";
-//    }
-//
-//    // 顯示編輯商品資訊的表單
-//    @GetMapping("/{id}/edit")
-//    public String showEditProductForm(@PathVariable Long id, Model model) {
-//        Product product = productService.getProductById(id);
-//        model.addAttribute("product", product);
-//        model.addAttribute("categories", categoryService.getAllCategories());
-//        return "product-edit";
-//    }
-//
-//    // 更新商品資訊
-//    @PostMapping("/{id}/edit")
-//    public String updateProduct(@PathVariable Long id, @ModelAttribute ProductDTO productDTO) {
-//        Category category = categoryService.getCategoryById(productDTO.getCategoryId());
-//
-//        Product product = new Product();
-//        product.setName(productDTO.getName());
-//        product.setDescription(productDTO.getDescription());
-//        product.setPrice(productDTO.getPrice());
-//        product.setStock(productDTO.getStock());
-//        product.setCategory(category);
-//
-//        productService.updateProduct(id, product);
-//        return "redirect:/products/store/" + productDTO.getStoreId();
-//    }
-//
-//    // 刪除商品
-//    @PostMapping("/{id}/delete")
-//    public String deleteProduct(@PathVariable Long id) {
-//        productService.deleteProduct(id);
-//        return "redirect:/products/store/" + productService.getProductById(id).getStore().getId();
-//    }
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @GetMapping(value = "list")
+    public String findAllByCategoryId(@RequestParam(name = "category", required = false) Long categoryId,
+                                      HttpSession session,
+                                      Model model) {
+        List<Product> list;
+        if (categoryId == null) {
+            list = productService.getProducts();
+        } else {
+            list = productService.getProductsByCategoryId(categoryId);
+        }
+
+        List<ProductDTO> result = list.stream()
+                .map(ProductMapper::toDto)
+                .collect(Collectors.toList());
+
+        List<Category> categories = categoryService.getAllCategories();
+        Map<Long, String> categoryMap = categories.stream()
+                .collect(Collectors.toMap(Category::getId, Category::getName));
+
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("products", result);
+        model.addAttribute("categoryMap", categoryMap);
+        return "product/list";
+    }
+
+    @GetMapping(value = "/{id}")
+    public String browse(@PathVariable("id") Long id,
+                         @RequestParam(name = "editable", defaultValue = "false") Boolean editable,
+                         HttpSession session,
+                         Model model) {
+        String result = "product/single";
+
+        Product product = productService.getProductById(id);
+
+        if (product == null) {
+            result = "redirect:/product/list";
+        } else {
+            ProductDTO dto = ProductMapper.toDto(product);
+            List<Category> categories = categoryService.getAllCategories();
+
+            String jwtToken = (String) session.getAttribute("jwtToken");
+            CartItemDTO cartItemDTO;
+            if (jwtToken == null) {
+                cartItemDTO = getSessionCartItemDTO(session, product);
+            } else {
+                Long loginUserId = jwtUtil.extractUserId(jwtToken);
+                cartItemDTO = getUserCartItemDTO(loginUserId, product.getId());
+            }
+
+            session.setAttribute("categories", categories);
+
+            model.addAttribute("product", dto);
+            model.addAttribute("cart", cartItemDTO);
+//        model.addAttribute("categories", categories);
+        }
+
+        return result;
+    }
+
+    private CartItemDTO getSessionCartItemDTO(HttpSession session, Product product) {
+        CartItemDTO cartItemDTO;
+        List<CartItemDTO> cartItemDTOs =
+                CartItemController.getSessionCartItemDTOs(session.getAttribute(CartItemController.ATTRIBUTE_NAME));
+        cartItemDTO = cartItemDTOs.stream()
+                .filter(o -> o.getProductId().equals(product.getId()))
+                .findFirst()
+                .orElse(new CartItemDTO(null, product.getId(), 0));
+        return cartItemDTO;
+    }
+
+    private CartItemDTO getUserCartItemDTO(Long userId, Long productId) {
+        CartItemDTO cartItemDTO;
+        CartItem cartItem = cartService.findByUserIdAndProductId(userId, productId);
+
+        cartItemDTO = new CartItemDTO();
+        cartItemDTO.setProductId(productId);
+        if (cartItem != null) {
+            cartItemDTO.setId(cartItem.getId());
+            cartItemDTO.setQuantity(cartItem.getQuantity());
+        }
+        return cartItemDTO;
+    }
+
 }

@@ -20,12 +20,14 @@
     <td th:text="${store.address}"></td>
     <td th:text="${store.contact}"></td>
     <td>
-      <a th:href="@{/store/${store.id}}">編輯</a> |
+      <a th:href="@{|/store/${store.id}|}">瀏覽</a> |
+      <a th:href="@{|/store/${store.id}?editable=true|}">編輯</a> |
+      <a th:href="@{|/store/${store.id}/product/list|}">瀏覽商品</a>
     </td>
   </tr>
   </tbody>
 </table>
-<a th:href="@{|/store/create?owner=${owner.id}|}">新增商店</a>
+<a th:href="@{/store/create}">新增商店</a>
 <a th:href="@{/}">返回首頁</a>
 </body>
 </html>

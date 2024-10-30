@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="confirmCreateModal">
+  <div id="confirmCreateModal" style="display:none;">
+    <p id="confirmCreateMessage"></p>
+    <button onclick="confirmSelected('create')">確定</button>
+    <button onclick="closeModal('confirmCreateModal')">取消</button>
+  </div>
+</div>
+</body>
+</html>

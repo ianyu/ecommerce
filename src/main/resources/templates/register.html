@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+>
+
+<head>
+  <meta charset="UTF-8">
+  <title>註冊用戶詳細資料</title>
+</head>
+
+<body>
+<div class="container-fluid">
+  <h1>註冊用戶詳細資料</h1>
+
+  <form th:action="@{/auth/register}" th:object="${user}" method="post">
+    <div>
+      <label>電子郵件:</label>
+      <input type="text" th:field="*{email}" required/>
+    </div>
+    <div>
+      <label>密碼:</label>
+      <input type="password" th:field="*{password}" required/>
+    </div>
+    <div>
+      <label>用戶名稱:</label>
+      <input type="text" th:field="*{name}" required/>
+    </div>
+    <div>
+      <label>地址:</label>
+      <input type="text" th:field="*{address}" required/>
+    </div>
+    <br>
+
+    <div>
+      <button type="submit">會員註冊</button>
+    </div>
+    <br>
+  </form>
+
+  <div>
+    <a th:href="@{/}">返回首頁</a>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>訂單詳情</title>
+</head>
+<body>
+<h1>訂單詳情</h1>
+<p>訂單編號: <span th:text="${order.id}"></span></p>
+<p>訂單日期: <span th:text="${#dates.format(order.orderDate, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+<p>訂單狀態: <span th:text="${order.status}"></span></p>
+<h2>訂單商品</h2>
+<table>
+  <thead>
+  <tr>
+    <th>商品名稱</th>
+    <th>數量</th>
+    <th>價格</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="item : ${order.orderItems}">
+    <td th:text="${item.product.name}"></td>
+    <td th:text="${item.quantity}"></td>
+    <td th:text="${item.price}"></td>
+  </tr>
+  </tbody>
+</table>
+<a th:href="@{/order/list}">返回訂單列表</a>
+<!-- 返回首頁或繼續購物 -->
+<a th:href="@{/}">返回首頁</a>
+</body>
+</html>

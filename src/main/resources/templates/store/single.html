@@ -23,7 +23,9 @@
     <br>
 
     <div>
-      <a th:href="@{|/store/${store.id}?editable=true|}">編輯</a>
+      <a th:href="@{|/store/${store.id}?editable=true|}">編輯</a> |
+      <a th:href="@{|/store/${store.id}/product/list|}">瀏覽商品</a> |
+      <a th:href="@{/store/list}">返回商店列表</a> |
       <a th:href="@{/}">返回首頁</a>
     </div>
   </div>
@@ -48,8 +50,10 @@
     <br>
 
     <div>
-      <button type="submit" th:text="${store.id} != null ? '儲存' : '建立商店'">儲存</button> |
-      <!-- 返回首頁或其他操作連結 -->
+      <button type="submit" th:text="${store.id} != null ? '儲存' : '建立商店'">儲存</button>
+      |
+      <a th:href="@{|/store/${store.id}/product/list|}">瀏覽商品</a> |
+      <a th:href="@{/store/list}">返回商店列表</a> |
       <a th:href="@{/}">返回首頁</a>
     </div>
   </form>

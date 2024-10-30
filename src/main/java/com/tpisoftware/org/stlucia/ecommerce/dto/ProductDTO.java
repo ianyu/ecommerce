@@ -14,8 +14,8 @@ public class ProductDTO {
     private Long id;
     private String name;
     private String description;
-    private double price;
-    private int stock;
+    private Double price;
+    private Integer stock;
     private Long storeId; // 所屬商店 ID
     private Long categoryId; // 所屬類別 ID
 
