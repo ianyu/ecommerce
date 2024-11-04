@@ -53,7 +53,7 @@ public class ProductController {
                 .map(ProductMapper::toDto)
                 .collect(Collectors.toList());
 
-        List<Category> categories = categoryService.getAllCategories();
+        List<Category> categories = categoryService.findAll();
         Map<Long, String> categoryMap = categories.stream()
                 .collect(Collectors.toMap(Category::getId, Category::getName));
 
@@ -76,7 +76,7 @@ public class ProductController {
             result = "redirect:/product/list";
         } else {
             ProductDTO dto = ProductMapper.toDto(product);
-            List<Category> categories = categoryService.getAllCategories();
+            List<Category> categories = categoryService.findAll();
 
             String jwtToken = (String) session.getAttribute("jwtToken");
             CartItemDTO cartItemDTO;
@@ -87,11 +87,8 @@ public class ProductController {
                 cartItemDTO = getUserCartItemDTO(loginUserId, product.getId());
             }
 
-            session.setAttribute("categories", categories);
-
             model.addAttribute("product", dto);
             model.addAttribute("cart", cartItemDTO);
-//        model.addAttribute("categories", categories);
         }
 
         return result;

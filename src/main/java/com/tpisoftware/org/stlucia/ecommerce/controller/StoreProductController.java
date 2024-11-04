@@ -37,7 +37,7 @@ public class StoreProductController {
                 .map(ProductMapper::toDto)
                 .collect(Collectors.toList());
 
-        List<Category> categories = categoryService.getAllCategories();
+        List<Category> categories = categoryService.findAll();
         Map<Long, String> categoryMap = categories.stream()
                 .collect(Collectors.toMap(Category::getId, Category::getName));
 
@@ -52,7 +52,7 @@ public class StoreProductController {
         ProductDTO dto = new ProductDTO();
         dto.setStoreId(storeId);
 
-        List<Category> categories = categoryService.getAllCategories();
+        List<Category> categories = categoryService.findAll();
 
         model.addAttribute("product", dto);
         model.addAttribute("categories", categories);
@@ -79,7 +79,7 @@ public class StoreProductController {
         Product product = productService.getProductById(id);
         ProductDTO dto = ProductMapper.toDto(product);
 
-        List<Category> categories = categoryService.getAllCategories();
+        List<Category> categories = categoryService.findAll();
 
         model.addAttribute("product", dto);
         model.addAttribute("categories", categories);

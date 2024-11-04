@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>商品類別列表</title>
 </head>
@@ -13,7 +13,7 @@
   </tr>
   </thead>
   <tbody>
-  <tr th:each="category : ${session.categories}">
+  <tr th:each="category : ${categories}">
     <td th:text="${category.name}"></td>
     <td>
       <a th:href="@{|/category/${category.id}|}">瀏覽</a> |

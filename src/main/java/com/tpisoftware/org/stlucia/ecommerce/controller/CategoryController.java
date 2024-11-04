@@ -21,20 +21,20 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping(value = "list")
-    public String findAll(HttpSession session) {
+    public String findAll(HttpSession session, Model model) {
         String result = "category/list";
 
         String jwtToken = (String) session.getAttribute("jwtToken");
         if (jwtToken == null) {
             result = "redirect:/auth/login";
         } else {
-            List<Category> list = categoryService.getAllCategories();
+            List<Category> list = categoryService.findAll();
 
             List<CategoryDTO> dtos = list.stream()
                     .map(CategoryMapper::toDto)
                     .collect(Collectors.toList());
 
-            session.setAttribute("categories", dtos);
+            model.addAttribute("categories", dtos);
         }
         return result;
     }
@@ -78,7 +78,7 @@ public class CategoryController {
 
     @DeleteMapping
     public String delete(@ModelAttribute CategoryDTO dto) {
-        categoryService.deleteCategory(dto.getId());
+        categoryService.delete(dto.getId());
         return "redirect:/category/list";
     }
 

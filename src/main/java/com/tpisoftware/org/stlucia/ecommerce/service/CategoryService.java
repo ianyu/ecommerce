@@ -1,8 +1,8 @@
 package com.tpisoftware.org.stlucia.ecommerce.service;
 
 import com.tpisoftware.org.stlucia.ecommerce.exception.ExceptionMessages;
+import com.tpisoftware.org.stlucia.ecommerce.manager.CategorySingleton;
 import com.tpisoftware.org.stlucia.ecommerce.model.Category;
-import com.tpisoftware.org.stlucia.ecommerce.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,39 +10,31 @@ import java.util.List;
 
 @Service
 public class CategoryService {
+
     @Autowired
-    private CategoryRepository categoryRepository;
+    private CategorySingleton categorySingleton;
 
-    // 新增商品類別
     public void create(Category category) {
-        categoryRepository.save(category);
+        categorySingleton.save(category);
     }
 
-    public Category addCategory(Category category) {
-        return categoryRepository.save(category);
+    public List<Category> findAll() {
+        return categorySingleton.getCategories();
     }
 
-    // 查詢所有商品類別
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
-    }
-
-    // 根據 ID 查詢商品類別
     public Category findById(Long id) {
-        return categoryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(
+        return categorySingleton.get(id).orElseThrow(() -> new IllegalArgumentException(
                 String.format(ExceptionMessages.ENTITY_NOT_FOUND_WITH_ID, "category", id)));
     }
 
-    // 更新商品類別
     public void update(Long id, Category readyToUpdate) {
         Category category = findById(id);
         category.setName(readyToUpdate.getName());
-        categoryRepository.save(category);
+        categorySingleton.save(category);
     }
 
-    // 刪除商品類別
-    public void deleteCategory(Long id) {
-        categoryRepository.deleteById(id);
+    public void delete(Long id) {
+        categorySingleton.remove(id);
     }
 
 }
