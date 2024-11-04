@@ -13,6 +13,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberNotification implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private Long userId;  // 用戶編號
     private String title; // 通知標題
     private String content;  // 通知內容
